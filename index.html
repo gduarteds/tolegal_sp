@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSINT Investigator — Sistema de Investigação</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="22" stroke="#4a5568" stroke-width="2"/>
+        <circle cx="24" cy="24" r="10" stroke="#4a5568" stroke-width="2"/>
+        <line x1="24" y1="2" x2="24" y2="46" stroke="#4a5568" stroke-width="1.5" stroke-dasharray="3,4"/>
+        <line x1="2" y1="24" x2="46" y2="24" stroke="#4a5568" stroke-width="1.5" stroke-dasharray="3,4"/>
+        <circle cx="24" cy="24" r="3" fill="#e53e3e"/>
+      </svg>
+    </div>
+    <h1>OSINT Investigator</h1>
+    <p class="login-subtitle">Sistema de Investigação de Fraudes</p>
+    <div class="login-form">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div id="login-error" class="login-error" style="display:none">Credenciais inválidas.</div>
+      <button class="btn-login" onclick="doLogin()">Entrar</button>
+    </div>
+    <p class="login-version">v1.0 · Uso restrito · Investigação OSINT</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <div class="top-header-logo">
+      <svg width="22" height="22" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="21" stroke="#22c55e" stroke-width="2"/>
+        <circle cx="24" cy="24" r="9"  stroke="#22c55e" stroke-width="2"/>
+        <circle cx="24" cy="24" r="3"  fill="#22c55e"/>
+        <line x1="24" y1="3"  x2="24" y2="45" stroke="#22c55e" stroke-width="1" stroke-dasharray="3,5"/>
+        <line x1="3"  y1="24" x2="45" y2="24" stroke="#22c55e" stroke-width="1" stroke-dasharray="3,5"/>
+      </svg>
+      <div>
+        <div class="header-logo-text">OSINT<span class="accent">INV</span></div>
+        <span class="header-version">v1.0 · classified</span>
+      </div>
+    </div>
+    <nav class="top-nav">
+      <a href="#" class="nav-item active" data-tab="home" onclick="showTab('home',this)">Home</a>
+      <a href="#" class="nav-item" data-tab="target" onclick="showTab('target',this)">Target Profile</a>
+      <a href="#" class="nav-item" data-tab="licenses" onclick="showTab('licenses',this)">Licenças Falsas</a>
+      <a href="#" class="nav-item" data-tab="database" onclick="showTab('database',this)">Database</a>
+      <a href="#" class="nav-item" data-tab="whois" onclick="showTab('whois',this)">Whois/Gobuster</a>
+    </nav>
+    <div class="top-header-right">
+      <span class="header-user">INVESTIGADOR</span>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- APP BODY -->
+  <div class="app-body">
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel">
+    <div class="lp-section">
+      <div class="lp-label">Welcome,</div>
+      <div class="lp-value">INVESTIGADOR</div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-label">Clearance Level</div>
+      <div class="lp-value accent">AUTHORIZED</div>
+    </div>
+    <div class="lp-divider"></div>
+    <div class="lp-section">
+      <div class="lp-label">Sites Fraudulentos</div>
+      <div class="lp-stat-number" id="lp-stat-sites">0</div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-label">Suspeitos</div>
+      <div class="lp-stat-number" id="lp-stat-targets">0</div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-label">Licenças Coletadas</div>
+      <div class="lp-stat-number" id="lp-stat-licenses">0</div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-label">Casos Encerrados</div>
+      <div class="lp-stat-number" id="lp-stat-closed">0</div>
+    </div>
+    <div class="lp-divider"></div>
+    <div class="lp-section">
+      <div class="lp-label">Navigation</div>
+      <a href="#" class="lp-nav-item active" onclick="showTab('home',document.querySelector('.nav-item'))">World Map</a>
+      <a href="#" class="lp-nav-item" onclick="showTab('target',document.querySelectorAll('.nav-item')[1])">Targets</a>
+      <a href="#" class="lp-nav-item" onclick="showTab('licenses',document.querySelectorAll('.nav-item')[2])">Archive</a>
+      <a href="#" class="lp-nav-item" onclick="showTab('database',document.querySelectorAll('.nav-item')[3])">Database</a>
+      <a href="#" class="lp-nav-item" onclick="showTab('whois',document.querySelectorAll('.nav-item')[4])">Recon</a>
+    </div>
+    <div class="lp-divider"></div>
+    <div class="lp-section">
+      <div class="lp-label">System Status</div>
+      <div class="lp-status-row"><span class="status-dot green"></span>Connection: Online</div>
+      <div class="lp-status-row"><span class="status-dot green"></span>Database: Active</div>
+      <div class="lp-status-row"><span class="status-dot yellow"></span>Encryption: AES-256</div>
+    </div>
+    <div class="lp-divider"></div>
+    <div class="lp-section">
+      <div class="lp-label">Operação Ativa</div>
+      <div class="lp-value accent-red">TOLEGAL</div>
+    </div>
+    <div class="lp-divider"></div>
+    <div class="lp-section">
+      <div class="lp-label">Hora Local</div>
+      <div class="lp-clock" id="lp-clock">--:--:--</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- HOME TAB -->
+    <div id="tab-home" class="tab-content active">
+      <div class="page-header">
+        <div>
+          <h1>Centro de Operações</h1>
+          <p class="page-subtitle">Investigações ativas · Fraudes de licenças TôLegal</p>
+        </div>
+        <div class="header-actions">
+          <span id="home-datetime" class="datetime-badge"></span>
+        </div>
+      </div>
+
+      <!-- STATUS CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card danger">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-val" id="stat-sites">0</div>
+          <div class="stat-label">Sites Fraudulentos</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-val" id="stat-targets">0</div>
+          <div class="stat-label">Suspeitos Cadastrados</div>
+        </div>
+        <div class="stat-card info">
+          <div class="stat-icon">📄</div>
+          <div class="stat-val" id="stat-licenses">0</div>
+          <div class="stat-label">Licenças Falsas Coletadas</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-icon">✅</div>
+          <div class="stat-val" id="stat-closed">0</div>
+          <div class="stat-label">Casos Encerrados</div>
+        </div>
+      </div>
+
+      <!-- INVESTIGATIONS LIST + ADD -->
+      <div class="two-col">
+        <div class="card full-width">
+          <div class="card-header">
+            <h2>Investigações em Andamento</h2>
+            <button class="btn-sm btn-primary" onclick="openAddInvestModal()">+ Nova Investigação</button>
+          </div>
+          <div id="investigations-list">
+            <div class="empty-state">Nenhuma investigação registrada. Clique em <strong>+ Nova Investigação</strong> para começar.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT FRAUD SITES -->
+      <div class="card mt-1">
+        <div class="card-header">
+          <h2>Histórico de Sites Fraudulentos / Phishing</h2>
+          <button class="btn-sm btn-primary" onclick="openAddSiteModal()">+ Registrar Site</button>
+        </div>
+        <div class="table-wrap">
+          <table id="fraud-sites-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>URL / Domínio</th>
+                <th>IP</th>
+                <th>Tipo</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Notas</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="fraud-sites-body">
+              <tr><td colspan="8" class="empty-row">Nenhum site registrado.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARGET PROFILE TAB -->
+    <div id="tab-target" class="tab-content">
+      <div class="page-header">
+        <div>
+          <h1>Target Profile</h1>
+          <p class="page-subtitle">Suspeitos e pessoas relacionadas ao esquema fraudulento</p>
+        </div>
+        <button class="btn-primary" onclick="openAddTargetModal()">+ Novo Suspeito</button>
+      </div>
+      <div id="targets-grid" class="targets-grid">
+        <div class="empty-state">Nenhum suspeito cadastrado.</div>
+      </div>
+    </div>
+
+    <!-- LICENÇAS FALSAS TAB -->
+    <div id="tab-licenses" class="tab-content">
+      <div class="page-header">
+        <div>
+          <h1>Licenças Falsas — TôLegal</h1>
+          <p class="page-subtitle">Pesquise por nome, CPF/CNPJ ou logradouro</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="search-row">
+          <input type="text" id="license-search" placeholder="Nome do ambulante, CPF/CNPJ ou logradouro..." oninput="searchLicenses()">
+          <button class="btn-primary" onclick="searchLicenses()">Buscar</button>
+          <button class="btn-secondary" onclick="printSelectedLicenses()">🖨️ Imprimir Selecionadas</button>
+        </div>
+        <div id="license-results" class="license-results">
+          <div class="empty-state">Digite um termo para buscar licenças falsas carregadas no Database.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATABASE TAB -->
+    <div id="tab-database" class="tab-content">
+      <div class="page-header">
+        <div>
+          <h1>Database</h1>
+          <p class="page-subtitle">Gerencie os arquivos HTML de licenças falsas e sitemaps</p>
+        </div>
+      </div>
+      <div class="two-col-equal">
+        <!-- Upload HTML -->
+        <div class="card">
+          <div class="card-header"><h2>📎 Adicionar HTMLs de Licenças</h2></div>
+          <div id="db-preloaded-info" class="import-status ok" style="margin-bottom:12px">
+            ✅ <strong id="db-preloaded-count">443</strong> licenças pré-carregadas no código — prontas para uso.
+          </div>
+          <p class="card-desc">Para adicionar novas licenças (além das pré-carregadas), arraste HTMLs no formato TôLegal abaixo.</p>
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()"
+               ondragover="event.preventDefault();this.classList.add('dragover')"
+               ondragleave="this.classList.remove('dragover')"
+               ondrop="handleDrop(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p>Arraste HTMLs adicionais aqui / clique para selecionar</p>
+            <span class="drop-hint">Suporta múltiplos arquivos .html</span>
+          </div>
+          <input type="file" id="file-input" accept=".html,.htm" multiple style="display:none" onchange="handleFileInput(event)">
+          <div id="db-import-status" class="import-status" style="display:none"></div>
+        </div>
+
+        <!-- Sitemap URL -->
+        <div class="card">
+          <div class="card-header"><h2>🌐 Indicar Sitemap / Link</h2></div>
+          <p class="card-desc">Insira a URL de um sitemap XML ou página do site fraudulento para indexar os HTMLs.</p>
+          <div class="form-group">
+            <label>URL do Sitemap ou Site</label>
+            <input type="url" id="sitemap-url" placeholder="https://sitio-fraudulento.com/sitemap.xml">
+          </div>
+          <div class="form-group">
+            <label>Nota / Observação</label>
+            <input type="text" id="sitemap-note" placeholder="Ex: site principal da fraude TôLegal">
+          </div>
+          <button class="btn-primary" onclick="addSitemap()">Adicionar Sitemap</button>
+          <div id="sitemaps-list" class="sitemaps-list mt-1"></div>
+        </div>
+      </div>
+
+      <!-- Loaded License Files -->
+      <div class="card mt-1">
+        <div class="card-header">
+          <h2>Arquivos Carregados</h2>
+          <span id="db-file-count" class="badge">0 arquivos</span>
+        </div>
+        <div id="db-files-list" class="db-files-list">
+          <div class="empty-state">Nenhum arquivo carregado.</div>
+        </div>
+      </div>
+
+      <!-- Cloud Sync -->
+      <div class="card mt-1">
+        <div class="card-header">
+          <h2>☁️ Sincronização Automática</h2>
+          <span id="fb-sync-status" class="badge badge-success">☁️ Ativo</span>
+        </div>
+        <p class="card-desc">Dados sincronizados automaticamente via Firebase em tempo real. Funciona em qualquer dispositivo — basta fazer login.</p>
+        <p class="backup-note" style="margin-top:8px">
+          <strong>✅ Auto-sync:</strong> cada alteração é enviada para a nuvem em 2 segundos.<br>
+          <strong>Novo dispositivo / navegador:</strong> faça login — os dados aparecem automaticamente.<br>
+          <strong>Offline:</strong> os dados ficam salvos localmente e sincronizam quando a conexão voltar.
+        </p>
+      </div>
+
+      <!-- Backup / Restore -->
+      <div class="card mt-1">
+        <div class="card-header"><h2>💾 Backup Local — Exportar / Importar</h2></div>
+        <p class="card-desc">Todos os dados (investigações, suspeitos, sites, licenças) são salvos automaticamente neste navegador. Use o backup para transferir entre dispositivos ou garantir uma cópia de segurança.</p>
+        <div class="backup-row">
+          <button class="btn-primary" onclick="exportData()">⬇️ Exportar Backup (.json)</button>
+          <button class="btn-secondary" onclick="document.getElementById('import-input').click()">⬆️ Importar Backup</button>
+          <button class="btn-danger btn-sm" onclick="clearAllData()" style="margin-left:auto">🗑️ Limpar Tudo</button>
+        </div>
+        <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(this.files[0]);this.value=''">
+        <p class="backup-note">
+          <strong>✅ Salvamento automático:</strong> cada alteração é gravada instantaneamente no <em>localStorage</em> deste navegador.<br>
+          O backup .json permite restaurar os dados em outro dispositivo ou navegador.
+        </p>
+      </div>
+    </div>
+
+    <!-- WHOIS/RECON TAB -->
+    <div id="tab-whois" class="tab-content">
+      <div class="page-header">
+        <div>
+          <h1>Recon / OSINT</h1>
+          <p class="page-subtitle">Whois · DNS · Subdomínios · GeoIP · Headers · Port Scan · URLScan — APIs reais com fallbacks automáticos</p>
+        </div>
+      </div>
+
+      <!-- Input + Tools -->
+      <div class="card">
+        <div class="recon-input-row">
+          <div class="recon-input-wrap">
+            <span class="recon-prompt">$</span>
+            <input type="text" id="recon-domain" placeholder="domínio ou IP — ex: prefeitura-sp-gov.com"
+                   onkeydown="if(event.key==='Enter')runAllRecon()">
+          </div>
+          <button class="btn-primary btn-recon-main" onclick="runAllRecon()">⚡ Recon Completo</button>
+        </div>
+        <div class="recon-tools-grid">
+          <button class="btn-tool" onclick="runWhoisRDAP()">🔍 Whois / RDAP</button>
+          <button class="btn-tool" onclick="runDNSRecon()">📡 DNS Records</button>
+          <button class="btn-tool" onclick="runSubdomainEnum()">🌐 Subdomínios</button>
+          <button class="btn-tool" onclick="runReverseIPLookup()">🔄 Reverse IP</button>
+          <button class="btn-tool" onclick="runGeoIPLookup()">📍 GeoIP / ASN</button>
+          <button class="btn-tool" onclick="runHTTPHeadersCheck()">📋 Headers HTTP</button>
+          <button class="btn-tool" onclick="runPortScanNmap()">🔌 Port Scan</button>
+          <button class="btn-tool" onclick="runURLScanSearch()">🕵️ URLScan.io</button>
+          <button class="btn-tool btn-tool-ai" onclick="runAIAnalysis()">🤖 IA Groq</button>
+        </div>
+      </div>
+
+      <!-- Terminal Output -->
+      <div class="card mt-1">
+        <div class="card-header">
+          <h2>Terminal</h2>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm btn-secondary" onclick="copyReconTerminal()">📋 Copiar</button>
+            <button class="btn-sm btn-secondary" onclick="termClear()">🗑️ Limpar</button>
+            <button class="btn-sm btn-primary" onclick="saveCurrentReconResult()">💾 Salvar</button>
+          </div>
+        </div>
+        <div id="recon-terminal" class="recon-terminal">
+          <div class="term-line term-placeholder">Aguardando consulta...</div>
+        </div>
+      </div>
+
+      <!-- AI Analysis -->
+      <div class="card mt-1">
+        <div class="card-header"><h2>🤖 Análise com IA (Groq)</h2></div>
+        <p class="card-desc">Análise do domínio com inteligência artificial — identifica padrões de fraude, infraestrutura provável e recomendações de investigação.</p>
+        <div class="groq-row">
+          <input type="text" id="ai-domain" placeholder="Domínio para análise com IA (ou usa o campo terminal acima)...">
+          <button class="btn-primary" onclick="runAIAnalysis()">Analisar</button>
+        </div>
+        <div id="ai-result" class="tool-result ai-result" style="display:none"></div>
+      </div>
+
+      <!-- Saved results -->
+      <div class="card mt-1">
+        <div class="card-header">
+          <h2>📁 Resultados Salvos</h2>
+          <button class="btn-sm btn-secondary" onclick="clearSavedResults()">Limpar</button>
+        </div>
+        <div id="saved-results-list" class="saved-results">
+          <div class="empty-state">Nenhum resultado salvo ainda.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  </div><!-- /.app-body -->
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a href="#" class="bottom-nav-item active" data-tab="home" onclick="showTab('home',this);return false">
+      <span class="bottom-nav-icon">🏠</span><span>Home</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-tab="target" onclick="showTab('target',this);return false">
+      <span class="bottom-nav-icon">🎯</span><span>Suspeitos</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-tab="licenses" onclick="showTab('licenses',this);return false">
+      <span class="bottom-nav-icon">📄</span><span>Licenças</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-tab="database" onclick="showTab('database',this);return false">
+      <span class="bottom-nav-icon">🗄️</span><span>Database</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-tab="whois" onclick="showTab('whois',this);return false">
+      <span class="bottom-nav-icon">🔍</span><span>Recon</span>
+    </a>
+  </nav>
+
+  <!-- SAVE TOAST -->
+  <div id="save-toast" class="save-toast">💾 Dados salvos</div>
+
+</div>
+
+<!-- MODALS -->
+
+<!-- Add Investigation Modal -->
+<div id="modal-invest" class="modal-overlay" style="display:none" onclick="closeModalOnOverlay(event,'modal-invest')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Nova Investigação</h2>
+      <button onclick="closeModal('modal-invest')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Título / Codinome</label><input type="text" id="inv-title" placeholder="Ex: Operação TôLegal"></div>
+      <div class="form-group"><label>Descrição</label><textarea id="inv-desc" rows="3" placeholder="Resumo da investigação..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Status</label>
+          <select id="inv-status">
+            <option value="ativa">Ativa</option>
+            <option value="suspensa">Suspensa</option>
+            <option value="encerrada">Encerrada</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Prioridade</label>
+          <select id="inv-priority">
+            <option value="alta">Alta</option>
+            <option value="media">Média</option>
+            <option value="baixa">Baixa</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Domínios / Sites Envolvidos</label><input type="text" id="inv-domains" placeholder="site1.com, site2.com.br"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-invest')">Cancelar</button>
+      <button class="btn-primary" onclick="saveInvestigation()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Fraud Site Modal -->
+<div id="modal-site" class="modal-overlay" style="display:none" onclick="closeModalOnOverlay(event,'modal-site')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Registrar Site Fraudulento</h2>
+      <button onclick="closeModal('modal-site')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>URL / Domínio</label><input type="text" id="site-url" placeholder="https://site-fraude.com.br"></div>
+      <div class="form-row">
+        <div class="form-group"><label>IP</label><input type="text" id="site-ip" placeholder="Ex: 189.28.112.4"></div>
+        <div class="form-group"><label>Tipo</label>
+          <select id="site-type">
+            <option value="phishing">Phishing</option>
+            <option value="licenca-falsa">Licença Falsa</option>
+            <option value="scam">Scam</option>
+            <option value="clone">Clone de Site</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Status</label>
+          <select id="site-status">
+            <option value="investigando">Em Investigação</option>
+            <option value="confirmado">Confirmado</option>
+            <option value="derrubado">Derrubado</option>
+            <option value="monitorando">Monitorando</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Data de Descoberta</label><input type="date" id="site-date"></div>
+      </div>
+      <div class="form-group"><label>Notas / Evidências</label><textarea id="site-notes" rows="3" placeholder="Observações, links de evidências..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-site')">Cancelar</button>
+      <button class="btn-primary" onclick="saveFraudSite()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Target Modal -->
+<div id="modal-target" class="modal-overlay" style="display:none" onclick="closeModalOnOverlay(event,'modal-target')">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h2 id="modal-target-title">Cadastrar Suspeito</h2>
+      <button onclick="closeModal('modal-target')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="target-form-grid">
+        <div class="target-photo-col">
+          <div class="photo-upload-area" onclick="document.getElementById('target-photo-input').click()">
+            <div id="target-photo-preview" class="photo-preview">
+              <svg id="silhouette-male" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" width="80">
+                <circle cx="50" cy="28" r="20" fill="#9ca3af"/>
+                <path d="M10 110c0-22.1 17.9-40 40-40s40 17.9 40 40" fill="#9ca3af"/>
+              </svg>
+            </div>
+            <div class="photo-label">Clique para adicionar foto</div>
+            <div class="silhouette-choice">
+              <button type="button" class="btn-xs" onclick="event.stopPropagation();setSilhouette('male')">♂ Masculino</button>
+              <button type="button" class="btn-xs" onclick="event.stopPropagation();setSilhouette('female')">♀ Feminino</button>
+            </div>
+          </div>
+          <input type="file" id="target-photo-input" accept="image/*" style="display:none" onchange="previewTargetPhoto(event)">
+          <div class="status-select-area">
+            <label>Status</label>
+            <select id="target-status-badge">
+              <option value="suspeito">Suspeito</option>
+              <option value="investigado">Investigado</option>
+              <option value="indiciado">Indiciado</option>
+              <option value="preso">Preso</option>
+              <option value="foragido">Foragido</option>
+              <option value="colaborador">Colaborador</option>
+            </select>
+          </div>
+        </div>
+        <div class="target-fields-col">
+          <div class="brasao-header">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112" class="brasao-img">
+              <polygon points="50,1 52.5,8.5 60,8.5 54,13 56.5,20.5 50,16 43.5,20.5 46,13 40,8.5 47.5,8.5" fill="#F5C518"/>
+              <circle cx="50" cy="64" r="44" fill="#B8860B"/>
+              <circle cx="50" cy="64" r="41" fill="#F5C518"/>
+              <circle cx="50" cy="64" r="37" fill="#007A3D"/>
+              <circle cx="50" cy="64" r="30" fill="#002776"/>
+              <line x1="24" y1="73" x2="76" y2="53" stroke="rgba(255,255,255,0.15)" stroke-width="9"/>
+              <circle cx="50" cy="46" r="3" fill="white"/>
+              <circle cx="37.5" cy="59" r="2.1" fill="white" opacity="0.9"/>
+              <circle cx="50" cy="61" r="1.9" fill="white" opacity="0.72"/>
+              <circle cx="62.5" cy="58" r="2.1" fill="white" opacity="0.85"/>
+              <circle cx="56" cy="69" r="1.3" fill="white" opacity="0.68"/>
+              <path d="M 18 82 Q 50 98 82 82 L 82 94 Q 50 110 18 94 Z" fill="#002776"/>
+              <text x="50" y="89" text-anchor="middle" font-family="Arial,sans-serif" font-size="4.3" fill="white" font-weight="bold">REPÚBLICA FEDERATIVA</text>
+              <text x="50" y="96" text-anchor="middle" font-family="Arial,sans-serif" font-size="3.3" fill="#F5C518">DO BRASIL · 1889</text>
+            </svg>
+            <div>
+              <div class="target-system-label">PERFIL DE ALVO — CLASSIFICADO</div>
+              <div class="target-system-sub">Sistema de Investigação OSINT · Uso Restrito</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group autocomplete-wrap">
+              <label>Nome Completo <span class="ac-hint" id="ac-hint-label"></span></label>
+              <input type="text" id="target-name" placeholder="Nome completo" autocomplete="off" oninput="onTargetNameInput(this.value)">
+              <div id="target-name-suggestions" class="autocomplete-dropdown" style="display:none"></div>
+            </div>
+            <div class="form-group"><label>Apelido / Alias</label><input type="text" id="target-alias" placeholder="Apelido conhecido"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>CPF / CNPJ</label><input type="text" id="target-cpf" placeholder="000.000.000-00"></div>
+            <div class="form-group"><label>Data de Nascimento</label><input type="date" id="target-dob"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Nacionalidade</label><input type="text" id="target-nationality" value="Brasileiro(a)"></div>
+            <div class="form-group"><label>Ocupação</label><input type="text" id="target-occupation" placeholder="Ex: Vendedor ambulante, TI..."></div>
+          </div>
+          <div class="form-group"><label>Endereço / Localidade</label><input type="text" id="target-address" placeholder="Cidade, Estado"></div>
+          <div class="form-group"><label>Telefone / Contato</label><input type="text" id="target-phone" placeholder="(00) 00000-0000"></div>
+          <div class="form-group"><label>Sites / Domínios Vinculados</label><input type="text" id="target-sites" placeholder="site1.com, site2.com.br"></div>
+          <div class="form-group"><label>Descrição / Inteligência</label><textarea id="target-intel" rows="2" placeholder="Resumo da atuação no esquema..."></textarea></div>
+          <div class="form-group"><label>Notas de Investigação (Event Log)</label><textarea id="target-notes" rows="2" placeholder="Notas adicionais que aparecerão no event log..."></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-target')">Cancelar</button>
+      <button class="btn-primary" onclick="saveTarget()">Salvar Perfil</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Target Modal -->
+<div id="modal-view-target" class="modal-overlay" style="display:none" onclick="closeModalOnOverlay(event,'modal-view-target')">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h2>Perfil de Alvo</h2>
+      <button onclick="closeModal('modal-view-target')">✕</button>
+    </div>
+    <div id="view-target-content" class="modal-body target-profile-view"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-view-target')">Fechar</button>
+      <button class="btn-secondary" onclick="editFromView()">✏️ Editar</button>
+      <button class="btn-primary" onclick="printTargetProfile()">🖨️ Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Groq API Key Modal -->
+<div id="modal-groq" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>🤖 Configurar API Groq</h2>
+    </div>
+    <div class="modal-body">
+      <p>Para utilizar análise com IA, informe sua chave da API Groq. Ela será salva neste dispositivo e não compartilhada.</p>
+      <div class="form-group">
+        <label>Chave API Groq</label>
+        <input type="password" id="groq-api-key-input" placeholder="gsk_...">
+      </div>
+      <p class="hint-text">Obtenha sua chave em <a href="https://console.groq.com" target="_blank">console.groq.com</a> (gratuito).</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="saveGroqKey()">Salvar Chave</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyBPh8FzLP6NTRDv270O-11UDSDlGDvDFVk",
+  authDomain: "tolegal-sp.firebaseapp.com",
+  databaseURL: "https://tolegal-sp-default-rtdb.firebaseio.com",
+  projectId: "tolegal-sp",
+  storageBucket: "tolegal-sp.firebasestorage.app",
+  messagingSenderId: "429882204343",
+  appId: "1:429882204343:web:d531456da752d7bad96d32"
+});
+</script>
+<script src="js/licenses-data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
