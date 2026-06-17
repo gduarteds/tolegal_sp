@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('paginas/index.json'\\)\\); print\\(f'Criado index.json com {d[\\\\\"count\\\\\"]} arquivos'\\)\")",
+      "Bash(python3 -m http.server 8765)",
+      "WebFetch(domain:localhost)",
+      "Bash(kill %1)",
+      "Bash(python3 -m http.server 8080)",
+      "Bash(curl -s http://localhost:8080/paginas/index.json)",
+      "Bash(curl -s http://localhost:8080/)",
+      "Bash(curl -s http://localhost:8080/js/app.js)",
+      "Bash(node --check /home/pi/Desktop/workspace/osint_project/delegada_github/js/app.js)",
+      "Bash(curl -s http://localhost:8080/index.html)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/js/app.js)",
+      "Bash(python3 -c \"from bs4 import BeautifulSoup; print\\('bs4 ok'\\)\")",
+      "Bash(python3 -c \"import html.parser; print\\('html.parser ok'\\)\")",
+      "Bash(python3 -c \"import base64; print\\(base64.b64encode\\(b'gduarteds@gmail.com'\\).decode\\(\\)\\); print\\(base64.b64encode\\(b'Pentester*90'\\).decode\\(\\)\\)\")",
+      "Bash(mkdir -p /home/pi/Desktop/workspace/osint_project/delegada_github/css && cp \"/home/pi/Desktop/workspace/osint_project/delegada_github/{css,js,data}/css/style.css\" /home/pi/Desktop/workspace/osint_project/delegada_github/css/style.css && echo \"Copiado OK\")",
+      "Bash(rm -rf \"/home/pi/Desktop/workspace/osint_project/delegada_github/{css,js,data}\" && echo \"Removida\" && ls /home/pi/Desktop/workspace/osint_project/delegada_github/)"
+    ],
+    "additionalDirectories": [
+      "/home/pi/Desktop/workspace/osint_project/delegada_github/{css,js,data}/css",
+      "/home/pi/Desktop/workspace/osint_project/delegada_github/{css,js,data}"
+    ]
+  }
+}
