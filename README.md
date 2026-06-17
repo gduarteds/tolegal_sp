@@ -16,8 +16,8 @@ Sistema de investigação de fraudes de licenças falsas (TôLegal) e sites de p
 
 ## Login
 
-- **Email:** gduarteds@gmail.com  
-- **Senha:** Pentester*90
+- **Email:**   
+- **Senha:** 
 
 ## Funcionalidades
 
